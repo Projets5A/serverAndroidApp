@@ -30,16 +30,16 @@ export class UserRoutes implements IRoute {
         let used: boolean = false;
         this.app.post("/createUser", (req: express.Request, res: express.Response) => {
             this.stockData.users.forEach( (user) => {
-                if (req.params.password === user.getPassword() && req.params.email === user.email
-                || req.params.pseudo === user.pseudo) {
+                if (req.query.password === user.getPassword() && req.query.email === user.email
+                || req.query.pseudo === user.pseudo) {
                     used = true;
                 }
             });
             if (used) {
                 res.status(403).send("Error: User already in database or already used pseudo");
             } else {
-                if (req.params.email && req.params.password && req.params.pseudo) {
-                    const user = new User(req.params.email, req.params.password, req.params.pseudo);
+                if (req.query.email && req.query.password && req.query.pseudo) {
+                    const user = new User(req.query.email, req.query.password, req.query.pseudo);
                     this.stockData.users.push(user);
                     res.status(201).send("Account created !");
                 } else {
@@ -53,8 +53,8 @@ export class UserRoutes implements IRoute {
         console.log("Path /deleteUser");
         this.app.delete("/deleteUser", (req: express.Request, res: express.Response) => {
             for (let i = 0; i < this.stockData.users.length; i++) {
-                if (req.params.password === this.stockData.users[i].getPassword()
-                    && req.params.email === this.stockData.users[i].email) {
+                if (req.query.password === this.stockData.users[i].getPassword()
+                    && req.query.email === this.stockData.users[i].email) {
                     this.stockData.users.splice( i, 1 );
                     res.status(201).send("User deleted !");
                     break;
@@ -69,45 +69,61 @@ export class UserRoutes implements IRoute {
     private signIn() {
         console.log("Path /signIn");
         this.app.get("/signIn", (req: express.Request, res: express.Response) => {
+            console.log(req);
+            let found: boolean = false;
             this.stockData.users.forEach( (user) => {
-                if (req.params.password === user.getPassword() && req.params.email === user.email) {
+                if (req.query.password === user.getPassword() && req.query.email === user.email) {
+                    found = true;
                     user.connected = true;
                     res.status(200).send({connexion: "authorized"});
                 }
             });
+            if(!found) {
+                res.status(401).send({connexion: "unauthorized"});
+            }
         });
     }
 
     private signOut() {
         console.log("Path /signOut");
         this.app.get("/signOut", (req: express.Request, res: express.Response) => {
+            let found: boolean = false;
             this.stockData.users.forEach( (user) => {
-                if (req.params.password === user.getPassword() && req.params.email === user.email) {
+                if (req.query.password === user.getPassword() && req.query.email === user.email) {
+                    found = true;
                     user.connected = false;
-                    res.status(200).send({connexion: "authorized"});
+                    res.status(200).send({deconnexion: "ok"});
                 }
             });
+            if (!found) {
+                res.status(404).send({deconnection: "User not found"});
+            }
         });
     }
 
     private changePassword() {
         console.log("Path /changePwd");
         this.app.post("/changePwd", (req: express.Request, res: express.Response) => {
+            let found: boolean = false;
             this.stockData.users.forEach( (user) => {
-                if (req.params.oldPassword === user.getPassword() && req.params.email === user.email) {
-                    user.changePassword(req.params.newPassword);
+                if (req.query.oldPassword === user.getPassword() && req.query.email === user.email) {
+                    found = true;
+                    user.changePassword(req.query.newPassword);
                     res.status(201).send("Password changed succefully");
                 }
             });
+            if (!found) {
+                res.status(404).send("User not found");
+            }
         });
     }
 
     private getUserInfos() {
-        console.log("Path /getUsersInfos");
+        console.log("Path /getUserInfos");
         this.app.post("/getUserInfos", (req: express.Request, res: express.Response) => {
             let found: boolean = false;
             this.stockData.users.forEach((user) => {
-                if (req.params.pseudo === user.pseudo) {
+                if (req.query.pseudo === user.pseudo) {
                     found = true;
                     res.status(200).send(user);
                 }

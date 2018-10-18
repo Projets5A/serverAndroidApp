@@ -25,8 +25,8 @@ export class ChatRoutes implements IRoute {
     private sendGroupMessage() {
       console.log("Path /sendGroupMessage");
       this.app.post("/sendGroupMessage", (req: express.Request, res: express.Response) => {
-        if (req.params.author && req.params.message) {
-          const message = new Message(req.params.author, req.params.message);
+        if (req.query.author && req.query.message) {
+          const message = new Message(req.query.author, req.query.message);
           this.stockData.chatGroup.push(message);
           res.status(201).send("Group message well received !");
         } else {
@@ -38,28 +38,28 @@ export class ChatRoutes implements IRoute {
     private sendPrivateMessage() {
       console.log("Path /sendPrivateMessage");
       this.app.post("/sendPrivateMessage", (req: express.Request, res: express.Response) => {
-        if (req.params.user1 && req.params.user2 && req.params.message) {
+        if (req.query.user1 && req.query.user2 && req.query.message) {
           let user1found: boolean = false;
           let user2found: boolean = false;
           this.stockData.users.forEach((user) => {
-            if (user.pseudo === req.params.user1) {
+            if (user.pseudo === req.query.user1) {
               user1found = true;
             }
-            if (user.pseudo === req.params.user2) {
+            if (user.pseudo === req.query.user2) {
               user2found = true;
             }
           });
           if (user1found && user2found) {
-            const message = new Message(req.params.author, req.params.message);
+            const message = new Message(req.query.author, req.query.message);
             let chat: PrivateChat;
             this.stockData.privateChats.forEach((privatechat) => {
-              if (privatechat.user1 === req.params.user1 && privatechat.user2 === req.params.user2
-                || privatechat.user1 === req.params.user2 && privatechat.user2 === req.params.user1) {
+              if (privatechat.user1 === req.query.user1 && privatechat.user2 === req.query.user2
+                || privatechat.user1 === req.query.user2 && privatechat.user2 === req.query.user1) {
                   chat = privatechat;
                 }
             });
             if (!chat) {
-              chat = new PrivateChat(req.params.user1, req.params.user2);
+              chat = new PrivateChat(req.query.user1, req.query.user2);
               this.stockData.privateChats.push(chat);
             }
             chat.messages.push(message);
@@ -85,8 +85,8 @@ export class ChatRoutes implements IRoute {
       this.app.get("/getPrivateMessages", (req: express.Request, res: express.Response) => {
         let found: boolean = false;
         this.stockData.privateChats.forEach((privatechat) => {
-          if (privatechat.user1 === req.params.user1 && privatechat.user2 === req.params.user2
-            || privatechat.user1 === req.params.user2 && privatechat.user2 === req.params.user1) {
+          if (privatechat.user1 === req.query.user1 && privatechat.user2 === req.query.user2
+            || privatechat.user1 === req.query.user2 && privatechat.user2 === req.query.user1) {
               found = true;
               res.status(200).send(privatechat.messages);
             }
