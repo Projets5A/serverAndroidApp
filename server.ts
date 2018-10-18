@@ -11,7 +11,7 @@ class Server {
 
     constructor() {
         this.app = express();
-        this.app.listen(3000, () => {
+        this.app.listen(8081, () => {
             console.log("Server online, ready to serve !");
         });
         this.stockData = new StockData();

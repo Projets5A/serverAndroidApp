@@ -78,7 +78,7 @@ export class UserRoutes implements IRoute {
                     res.status(200).send({connexion: "authorized"});
                 }
             });
-            if(!found) {
+            if (!found) {
                 res.status(401).send({connexion: "unauthorized"});
             }
         });
@@ -89,7 +89,7 @@ export class UserRoutes implements IRoute {
         this.app.get("/signOut", (req: express.Request, res: express.Response) => {
             let found: boolean = false;
             this.stockData.users.forEach( (user) => {
-                if (req.query.password === user.getPassword() && req.query.email === user.email) {
+                if (req.query.pseudo === user.pseudo) {
                     found = true;
                     user.connected = false;
                     res.status(200).send({deconnexion: "ok"});

@@ -26,9 +26,19 @@ export class ChatRoutes implements IRoute {
       console.log("Path /sendGroupMessage");
       this.app.post("/sendGroupMessage", (req: express.Request, res: express.Response) => {
         if (req.query.author && req.query.message) {
-          const message = new Message(req.query.author, req.query.message);
-          this.stockData.chatGroup.push(message);
-          res.status(201).send("Group message well received !");
+          let found: boolean = false;
+          this.stockData.users.forEach((user) => {
+            if (user.pseudo === req.query.author) {
+              found = true;
+            }
+          });
+          if (found) {
+            const message = new Message(req.query.author, req.query.message);
+            this.stockData.chatGroup.push(message);
+            res.status(201).send("Group message well received !");
+          } else {
+            res.status(404).send("User not found");
+          }
         } else {
           res.status(400).send("Bad parameters");
         }
