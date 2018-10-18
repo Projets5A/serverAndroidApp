@@ -98,7 +98,6 @@ export class ChatRoutes implements IRoute {
           if (privatechat.user1 === req.query.user1 && privatechat.user2 === req.query.user2
             || privatechat.user1 === req.query.user2 && privatechat.user2 === req.query.user1) {
               found = true;
-              console.log(privatechat);
               res.status(200).send(privatechat.messages);
             }
         });
