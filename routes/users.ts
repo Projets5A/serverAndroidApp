@@ -27,8 +27,8 @@ export class UserRoutes implements IRoute {
 
     private create() {
         console.log("Path /createUser");
-        let used: boolean = false;
         this.app.post("/createUser", (req: express.Request, res: express.Response) => {
+            let used: boolean = false;
             this.stockData.users.forEach( (user) => {
                 if (req.query.password === user.getPassword() && req.query.email === user.email
                 || req.query.pseudo === user.pseudo) {
@@ -53,8 +53,7 @@ export class UserRoutes implements IRoute {
         console.log("Path /deleteUser");
         this.app.delete("/deleteUser", (req: express.Request, res: express.Response) => {
             for (let i = 0; i < this.stockData.users.length; i++) {
-                if (req.query.password === this.stockData.users[i].getPassword()
-                    && req.query.email === this.stockData.users[i].email) {
+                if (req.query.pseudo === this.stockData.users[i].pseudo) {
                     this.stockData.users.splice( i, 1 );
                     res.status(201).send("User deleted !");
                     break;
@@ -120,7 +119,7 @@ export class UserRoutes implements IRoute {
 
     private getUserInfos() {
         console.log("Path /getUserInfos");
-        this.app.post("/getUserInfos", (req: express.Request, res: express.Response) => {
+        this.app.get("/getUserInfos", (req: express.Request, res: express.Response) => {
             let found: boolean = false;
             this.stockData.users.forEach((user) => {
                 if (req.query.pseudo === user.pseudo) {

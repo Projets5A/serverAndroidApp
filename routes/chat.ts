@@ -60,7 +60,6 @@ export class ChatRoutes implements IRoute {
             }
           });
           if (user1found && user2found) {
-            const message = new Message(req.query.author, req.query.message);
             let chat: PrivateChat;
             this.stockData.privateChats.forEach((privatechat) => {
               if (privatechat.user1 === req.query.user1 && privatechat.user2 === req.query.user2
@@ -72,6 +71,7 @@ export class ChatRoutes implements IRoute {
               chat = new PrivateChat(req.query.user1, req.query.user2);
               this.stockData.privateChats.push(chat);
             }
+            const message = new Message(req.query.user1, req.query.message);
             chat.messages.push(message);
             res.status(201).send("Private message well received !");
           } else {
@@ -98,6 +98,7 @@ export class ChatRoutes implements IRoute {
           if (privatechat.user1 === req.query.user1 && privatechat.user2 === req.query.user2
             || privatechat.user1 === req.query.user2 && privatechat.user2 === req.query.user1) {
               found = true;
+              console.log(privatechat);
               res.status(200).send(privatechat.messages);
             }
         });
