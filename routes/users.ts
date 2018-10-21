@@ -23,6 +23,7 @@ export class UserRoutes implements IRoute {
         this.signIn();
         this.signOut();
         this.getUserInfos();
+        this.users();
     }
 
     private create() {
@@ -71,7 +72,7 @@ export class UserRoutes implements IRoute {
             console.log(req);
             let found: boolean = false;
             this.stockData.users.forEach( (user) => {
-                if (req.query.password === user.getPassword() && req.query.email === user.email) {
+                if (req.query.password === user.getPassword() && req.query.pseudo === user.pseudo) {
                     found = true;
                     user.connected = true;
                     res.status(200).send({connexion: "authorized"});
@@ -141,8 +142,8 @@ export class UserRoutes implements IRoute {
     }
 
     private usersConnected() {
-        console.log("Path /getUsers");
-        this.app.get("/getUsers", (req: express.Request, res: express.Response) => {
+        console.log("Path /getUsersConnected");
+        this.app.get("/getUsersConnected", (req: express.Request, res: express.Response) => {
             const usersConnected = [];
             this.stockData.users.forEach((user) => {
                 if (user.connected) {
@@ -150,6 +151,13 @@ export class UserRoutes implements IRoute {
                 }
             });
             res.status(200).send({users: usersConnected});
+        });
+    }
+
+    private users() {
+        console.log("Path /getUsers");
+        this.app.get("/getUsers", (req: express.Request, res: express.Response) => {
+            res.status(200).send({users: this.stockData.users});
         });
     }
 }
